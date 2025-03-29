@@ -24,7 +24,11 @@ table {
 }
 
 .snake-cell {
-    background-color: whitesmoke;
+    background-color: rgb(13, 255, 0);
+}
+
+.food-cell {
+    background-color: rgb(221, 255, 0);
 }
 
 footer {
