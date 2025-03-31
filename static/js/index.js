@@ -4,26 +4,23 @@ const table = document.getElementById('grid-table')
 const score = document.getElementById('score')
 const num_rows = 30
 const num_cols = 30
-const grid = []
 const position = {
     row: num_rows-1,
     col: 0
 }
+let grid = []
 let current_direction = 'UP'
 let current_score = 0
 let foodRow = position.row
 let foodCol = position.col
+let dead = false
+let invervalID = 0
 //--------------------------------------------------
 
 //----------------- Functions ---------------------
 function populateGrid() {
-    for (let i = 0; i < num_rows; i++) {
-        const row = []
-        for (let j = 0; j < num_cols; j++) {
-            row.push(0)
-        }
-        grid.push(row)
-    }
+    grid = new Array(num_rows).fill(0)
+    grid.forEach((v, i) => grid[i] = new Array(num_cols).fill(0))
     grid[position.row][position.col] = 1
 }
 
@@ -37,10 +34,16 @@ function placeFood() {
     grid[foodRow][foodCol] = 2
 }
 
-function checkFoodEaten() {
+function checkIfFoodEaten() {
     if (foodRow == position.row && foodCol == position.col) {
         current_score++
         placeFood()
+    }
+}
+
+function checkIfDead() {
+    if (dead) {
+        clearInterval(invervalID)
     }
 }
 
@@ -70,26 +73,28 @@ function movePosition() {
         grid[position.row][position.col] = 0
         grid[position.row-1][position.col] = 1
         position.row--
-        checkFoodEaten()
+        checkIfFoodEaten()
         updateTable()
     } else if (current_direction == 'RIGHT' && position.col < num_cols - 1) {
         grid[position.row][position.col] = 0
         grid[position.row][position.col+1] = 1
         position.col++
-        checkFoodEaten()
+        checkIfFoodEaten()
         updateTable()
     } else if (current_direction == 'DOWN' && position.row < num_rows - 1) {
         grid[position.row][position.col] = 0
         grid[position.row+1][position.col] = 1
         position.row++
-        checkFoodEaten()
+        checkIfFoodEaten()
         updateTable()
     } else if (current_direction == 'LEFT' && position.col !== 0) {
         grid[position.row][position.col] = 0
         grid[position.row][position.col-1] = 1
         position.col--
-        checkFoodEaten()
+        checkIfFoodEaten()
         updateTable()
+    } else {
+        dead = true
     }
 }
 //--------------------------------------------------
@@ -112,9 +117,10 @@ function main() {
     populateGrid()
     placeFood()
     updateTable()
-    setInterval(() => {
+    invervalID = setInterval(() => {
         movePosition()
         updateScore()
+        checkIfDead()
     }, 100)
 }
 
